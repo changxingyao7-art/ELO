@@ -86,7 +86,7 @@ if not st.session_state.expert_id:
     st.info(f"💡 **测试说明**：\n\n欢迎参与本次【视觉偏好匿名盲测】！\n\n本测试旨在收集大众对不同场景的直觉偏好。请不要刻意分析图片细节，完全依靠您的**第一直觉**，选出您觉得【更舒适、更好看】的那一张。\n\n本组测试共 **{MAX_TASKS} 题**，全程仅需约 1 分钟，感谢您的支持！")
     
     # 隐私安抚文案
-    expert_id_input = st.text_input("请输入您的代号或昵称 (仅用于后台区分数据，严格保密，请放心填写)：", max_chars=15)
+    expert_id_input = st.text_input("请输入您的姓名 (仅用于后台区分数据，严格保密，请放心填写)：", max_chars=15)
     
     if st.button("🚀 我已了解，开始测试", type="primary", use_container_width=True):
         if expert_id_input:
