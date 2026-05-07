@@ -20,39 +20,50 @@ MAX_TASKS = 40
 
 st.set_page_config(page_title="景象偏好盲测", page_icon="👀", layout="centered")
 
-# ================= 📱 手机端完美排版 CSS 魔法 =================
+# ================= 📱 手机端核弹级 CSS 魔法 =================
 st.markdown("""
 <style>
-    /* 1. 强制图片列在手机端保持 50% 并排，彻底解决超出屏幕的问题 */
+    /* 1. 暴力切断 Streamlit 的换行机制，强制同行排列 */
     div[data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
+        display: flex !important;
         flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 0.5rem !important; /* 两张图中间留一点点小缝隙 */
     }
+    
+    /* 2. 强行平分 50% 领土，打死不许撑出屏幕 */
     div[data-testid="column"] {
         width: 50% !important;
         flex: 1 1 50% !important;
-        min-width: 0 !important; /* 核心修复：允许列无限缩小，防止把屏幕撑爆 */
-        padding: 0 4px !important; 
+        min-width: 0 !important;
+        padding: 0 !important; 
     }
-    /* 图片自适应缩放 */
-    .stImage > img {
-        border-radius: 6px;
+    
+    /* 3. 剥夺图片的真实大小，强行塞进 50% 的框框里 */
+    [data-testid="stImage"] {
+        width: 100% !important;
+    }
+    [data-testid="stImage"] img {
+        width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
-        object-fit: cover;
+        object-fit: cover !important; 
+        border-radius: 8px !important;
     }
-    /* 2. 去除页面顶部多余留白，让内容往上提 */
+
+    /* 去除页面顶部多余留白 */
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 0rem !important;
     }
-    /* 3. 增强按钮体验：加高、加粗、加间距 */
+    
+    /* 巨无霸舒适按钮 */
     .stButton > button {
         height: 3.2rem;
         font-size: 16px !important;
         font-weight: bold;
         border-radius: 8px;
-        margin-bottom: 5px; /* 按钮之间留出缝隙防误触 */
+        margin-bottom: 5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -77,7 +88,7 @@ def save_to_bmob(expert_id, img_a, img_b, winner, response_time, match_idx):
     except:
         pass 
 
-st.markdown("<h2 style='text-align: center;'>👀 场景视觉偏好快速测试</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; margin-bottom: 0;'>👀 场景视觉偏好快速测试</h2>", unsafe_allow_html=True)
 
 if 'expert_id' not in st.session_state:
     st.session_state.expert_id = None
@@ -121,7 +132,7 @@ else:
         st.progress(progress)
         st.caption(f"受试者: **{st.session_state.expert_id}** | 当前进度: **{st.session_state.current_q + 1} / {MAX_TASKS}**")
 
-        # 📱 完美适配手机的左右并排图片区 (严格50/50，绝不越界)
+        # 📱 图片并排展示
         col1, col2 = st.columns(2)
         with col1:
             st.image(f"images/{img_a_name}", caption="👈 场景 A", use_column_width=True)
@@ -137,7 +148,7 @@ else:
             st.session_state.start_time = time.time()
             st.rerun()
 
-        # 📱 完美还原你的设计：三个长条按钮垂直堆叠！
+        # 📱 完美的三段式按钮堆叠
         if st.button("👈 选 A (左侧场景更舒适)", type="primary", use_container_width=True): record_vote("A")
         if st.button("➖ 平局 / 难分伯仲", use_container_width=True): record_vote("Tie")
         if st.button("👉 选 B (右侧场景更舒适)", type="primary", use_container_width=True): record_vote("B")
